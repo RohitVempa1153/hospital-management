@@ -31,4 +31,10 @@ public class PatientService {
 
         return p1;
     }
+
+    @Transactional
+    public void deletePatientById(Long id)
+    {
+        patientRepository.deleteById(id);
+    }
 }

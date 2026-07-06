@@ -2,16 +2,19 @@ package com.example.hospitalmanagement.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.example.hospitalmanagement.entity.type.BloodGroupType;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -55,6 +58,7 @@ public class Patient {
 
     @CreationTimestamp
     @Column(updatable = false)
+    @org.hibernate.annotations.ColumnDefault("CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
@@ -63,10 +67,10 @@ public class Patient {
     // Contraints
 
     // Owning side it has foreign key
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private Insurance insurance;
 
-    @OneToMany(mappedBy = "patient")
-    private List<Appointment> appointment;
+    @OneToMany(mappedBy = "patient", cascade = {CascadeType.REMOVE}, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Appointment> appointments = new ArrayList<>();
 
 }

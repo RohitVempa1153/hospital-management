@@ -14,8 +14,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 public class Doctor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,13 +35,14 @@ public class Doctor {
     private String email;
 
     @CreationTimestamp
+    @org.hibernate.annotations.ColumnDefault("CURRENT_TIMESTAMP")
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     // Relations
 
     @OneToMany(mappedBy = "doctor")
-    private List<Appointment> appointment;
+    private List<Appointment> appointments;
 
     @ManyToMany(mappedBy = "doctors")
     private Set<Department> departments = new HashSet<>();
