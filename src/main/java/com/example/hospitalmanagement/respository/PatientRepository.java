@@ -3,8 +3,8 @@ package com.example.hospitalmanagement.respository;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.hibernate.query.Page;
-import org.springframework.boot.data.autoconfigure.web.DataWebProperties.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -36,7 +36,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long>{
     List<BloodGroupCountResponseEntity> countEachBloodGroupType();
 
     @Query(value = "select * from patient", nativeQuery = true)
-    Page findAllPatients(Pageable pageable);
+    Page<Patient> findAllPatients(Pageable pageable);
 
     @Transactional
     @Modifying

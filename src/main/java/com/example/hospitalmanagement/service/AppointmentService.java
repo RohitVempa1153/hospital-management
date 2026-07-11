@@ -1,7 +1,11 @@
 package com.example.hospitalmanagement.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
+import com.example.hospitalmanagement.dto.AppointmentResponseDto;
 import com.example.hospitalmanagement.entity.Appointment;
 import com.example.hospitalmanagement.entity.Doctor;
 import com.example.hospitalmanagement.entity.Patient;
@@ -11,9 +15,11 @@ import com.example.hospitalmanagement.respository.PatientRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final DoctorRepository doctorRepository;
@@ -48,5 +54,12 @@ public class AppointmentService {
         doctor.getAppointments().add(appointment);
 
         return appointment;
+    }
+
+    public List<AppointmentResponseDto> getAllAppointmentsOfDoctor(Long doctor_id)
+    {
+        List<Appointment> appointments = appointmentRepository.findAllByDoctorId(doctor_id);
+        return appointments.stream().map(appointment -> new AppointmentResponseDto(appointment.getId(), appointment.getAppointmentTime(), appointment.getReason(), appointment.getStatus()))
+        .collect(Collectors.toList());
     }
 }
