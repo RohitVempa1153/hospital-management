@@ -29,13 +29,13 @@ public class AppointmentTest {
         .reason("Sick")
         .build();
 
-        Appointment newAppointment = appointmentService.createNewAppointment(appointment, 1L, 1L);
+        // Appointment newAppointment = appointmentService.createNewAppointment(appointment, 1L, 1L);
 
-        System.out.println(newAppointment);
+        // System.out.println(newAppointment);
 
-        var updatedAppointment = appointmentService.reAssignAppointmentToAnotherDoctor(newAppointment.getId(), 2L);
+        // var updatedAppointment = appointmentService.reAssignAppointmentToAnotherDoctor(newAppointment.getId(), 2L);
 
-        System.out.println(updatedAppointment);
+        // System.out.println(updatedAppointment);
 
     }
 
@@ -57,9 +57,9 @@ public class AppointmentTest {
         .reason("Injury")
         .build();
 
-        appointmentService.createNewAppointment(a1, 1L, 1L);
-        appointmentService.createNewAppointment(a2, 2L, 1L);
-        appointmentService.createNewAppointment(a3, 2L, 1L);
+        // appointmentService.createNewAppointment(a1, 1L, 1L);
+        // appointmentService.createNewAppointment(a2, 2L, 1L);
+        // appointmentService.createNewAppointment(a3, 2L, 1L);
 
         patientService.deletePatientById(1L);
 

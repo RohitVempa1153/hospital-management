@@ -25,19 +25,10 @@ public class PatientService {
 //    private final EntityManager entityManager;
 
     @Transactional
-    public Patient getPatientById(Long id) {
+    public PatientResponseDto getPatientById(Long id) {
 
-        Patient p1 = patientRepository.findById(id).orElseThrow();
-
-        Patient p2 = patientRepository.findById(id).orElseThrow();
-
-        System.out.println(p1 == p2);
-
-        p1.setName("Yoyo");
-
-       patientRepository.save(p1);
-
-        return p1;
+        Patient patient = patientRepository.findById(id).orElseThrow();
+        return new PatientResponseDto(patient.getId(), patient.getName(), patient.getBirthDate(), patient.getEmail(), patient.getGender(), patient.getBloodGroup());
     }
 
     public List<PatientResponseDto> getAllPatients(Integer pageNumber, Integer size)

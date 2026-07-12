@@ -12,7 +12,9 @@ public class WebConfig {
     {
         httpSecurity.formLogin(formLogin->
             formLogin.disable()
-        );
+        )
+        .csrf(csrf -> csrf.disable())
+        ;
 
         return httpSecurity.build();
     }
