@@ -8,8 +8,8 @@ spring:
       client:
         registration:
             google:
-                client-id: sdkfjakjfsdk
-                client-secret: sgjfreijtrig
+                client-id: ${GOOGLE_CLIENT_ID}
+                client-secret: ${GOOGLE_CLIENT_SECRET}
             github:
                 client-id: ${GITHUB_CLIENT_ID}
                 client-secret: ${GITHUB_CLIENT_SECRET}
