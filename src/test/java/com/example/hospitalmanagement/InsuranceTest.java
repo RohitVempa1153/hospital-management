@@ -10,8 +10,6 @@ import com.example.hospitalmanagement.entity.Insurance;
 import com.example.hospitalmanagement.entity.Patient;
 import com.example.hospitalmanagement.service.InsuranceService;
 
-import lombok.RequiredArgsConstructor;
-
 @SpringBootTest
 public class InsuranceTest {
     @Autowired

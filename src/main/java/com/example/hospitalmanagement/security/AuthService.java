@@ -1,5 +1,7 @@
 package com.example.hospitalmanagement.security;
 
+import java.util.Set;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -11,9 +13,11 @@ import org.springframework.stereotype.Service;
 
 import com.example.hospitalmanagement.dto.LoginRequestDto;
 import com.example.hospitalmanagement.dto.LoginResponseDto;
+import com.example.hospitalmanagement.dto.SignupRequestDto;
 import com.example.hospitalmanagement.dto.SignupResponseDto;
 import com.example.hospitalmanagement.entity.User;
 import com.example.hospitalmanagement.entity.type.AuthProviderType;
+import com.example.hospitalmanagement.entity.type.RoleType;
 import com.example.hospitalmanagement.respository.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -40,7 +44,7 @@ public class AuthService {
         return new LoginResponseDto(token, user.getId());
     }
 
-    public User signupInternal(LoginRequestDto signupRequestDto, AuthProviderType authProviderType, String providerId)
+    public User signupInternal(SignupRequestDto signupRequestDto, AuthProviderType authProviderType, String providerId)
     {
         var user = userRepository.findByUsername(signupRequestDto.getUsername()).orElse(null);
         if (user != null) {
@@ -51,6 +55,7 @@ public class AuthService {
             .username(signupRequestDto.getUsername())
             .providerType(authProviderType)
             .providerId(providerId)
+            .roles(signupRequestDto.getRoles())
             .build();
 
         if (authProviderType == AuthProviderType.EMAIL) {
@@ -61,8 +66,8 @@ public class AuthService {
 
     }
 
-    // Login from controller
-    public SignupResponseDto signup(LoginRequestDto signupRequestDto) {
+    // Signup from controller
+    public SignupResponseDto signup(SignupRequestDto signupRequestDto) {
         User newUser = signupInternal(signupRequestDto, AuthProviderType.EMAIL, null);
         return new SignupResponseDto(newUser.getId(), newUser.getUsername());
     } 
@@ -83,7 +88,7 @@ public class AuthService {
             String username = authUtil.determineUsernameFromOAuth2User(oAuth2User, registrationId, providerId);
             log.info("User's email: {}",username);
             log.info("User's info: {}", oAuth2User);
-            user = signupInternal(new LoginRequestDto(username, null), providerType, providerId);
+            user = signupInternal(new SignupRequestDto(username, null, Set.of(RoleType.PATIENT)), providerType, providerId);
         }
         else if(user != null)
         {

@@ -37,6 +37,7 @@ public class WebSecurityConfig {
             .requestMatchers("/public/**").permitAll()
             .requestMatchers("/admin/**").authenticated()
             .requestMatchers("/auth/**").permitAll()
+            .requestMatchers("/doctors/**").authenticated()
         )
         .formLogin(formLogin->
             formLogin.disable()

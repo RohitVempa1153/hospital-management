@@ -1,12 +1,16 @@
 package com.example.hospitalmanagement.error;
 
 import java.nio.file.AccessDeniedException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.naming.AuthenticationException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -43,5 +47,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleGenericException(Exception ex) {
         ApiError apiError = new ApiError("An unexpected error occurred: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiError> handleMethodArgumentException(MethodArgumentNotValidException ex)
+    {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error)->{
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        ApiError apiError = new ApiError("Invalid or missing arguments: " + errors.toString(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 }
