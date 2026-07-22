@@ -3,6 +3,7 @@ package com.example.hospitalmanagement.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.example.hospitalmanagement.dto.AppointmentResponseDto;
@@ -63,6 +64,7 @@ public class AppointmentService {
         return appointment;
     }
 
+    @PreAuthorize("hasRole('ADMIN') OR (hasRole('DOCTOR') AND #doctor_id == authentication.principal.id)")
     public List<AppointmentResponseDto> getAllAppointmentsOfDoctor(Long doctor_id)
     {
         List<Appointment> appointments = appointmentRepository.findAllByDoctorId(doctor_id);
