@@ -12,7 +12,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.hospitalmanagement.entity.type.AuthProviderType;
+import com.example.hospitalmanagement.entity.type.PermissionType;
 import com.example.hospitalmanagement.entity.type.RoleType;
+import com.example.hospitalmanagement.security.RolePermissionMapping;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -41,6 +43,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 public class User implements UserDetails{
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -60,8 +63,17 @@ public class User implements UserDetails{
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-        .map((role)-> new SimpleGrantedAuthority("ROLE_"+role))
-        .collect(Collectors.toSet());
+        // return roles.stream()
+        // .map((role)-> new SimpleGrantedAuthority("ROLE_"+role))
+        // .collect(Collectors.toSet());
+
+        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+        roles.forEach((role)->{
+            Set<SimpleGrantedAuthority> permissions = RolePermissionMapping.getPermissionForRole(role);
+            authorities.addAll(permissions);
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+        });
+
+        return authorities;
     }
 }

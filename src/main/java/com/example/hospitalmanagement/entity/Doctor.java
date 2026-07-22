@@ -16,12 +16,18 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Doctor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +43,7 @@ public class Doctor {
     @Column
     private String specialization;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String email;
 
     @CreationTimestamp

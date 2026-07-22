@@ -1,8 +1,10 @@
 package com.example.hospitalmanagement.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class DoctorResponseDto {
     private Long id;
     private String name;
