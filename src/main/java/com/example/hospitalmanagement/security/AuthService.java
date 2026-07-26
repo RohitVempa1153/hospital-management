@@ -15,9 +15,13 @@ import com.example.hospitalmanagement.dto.LoginRequestDto;
 import com.example.hospitalmanagement.dto.LoginResponseDto;
 import com.example.hospitalmanagement.dto.SignupRequestDto;
 import com.example.hospitalmanagement.dto.SignupResponseDto;
+import com.example.hospitalmanagement.entity.Doctor;
+import com.example.hospitalmanagement.entity.Patient;
 import com.example.hospitalmanagement.entity.User;
 import com.example.hospitalmanagement.entity.type.AuthProviderType;
 import com.example.hospitalmanagement.entity.type.RoleType;
+import com.example.hospitalmanagement.respository.DoctorRepository;
+import com.example.hospitalmanagement.respository.PatientRepository;
 import com.example.hospitalmanagement.respository.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -31,6 +35,8 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final AuthUtil authUtil;
     private final UserRepository userRepository;
+    private final DoctorRepository doctorRepository;
+    private final PatientRepository patientRepository;
     private final PasswordEncoder passwordEncoder;
     
     public LoginResponseDto login(LoginRequestDto loginRequestDto)
@@ -57,7 +63,23 @@ public class AuthService {
             .providerId(providerId)
             .roles(signupRequestDto.getRoles())
             .build();
+        if (signupRequestDto.getRoles().contains(RoleType.PATIENT)) {
+            Patient patient = Patient.builder()
+            .name(signupRequestDto.getUsername())
+            .email(signupRequestDto.getUsername())
+            .user(user)
+            .build();
 
+            patientRepository.save(patient);
+        }
+        if (signupRequestDto.getRoles().contains(RoleType.DOCTOR)) {
+            Doctor doctor = Doctor.builder()
+            .name(signupRequestDto.getUsername())
+            .user(user)
+            .build();
+
+            doctorRepository.save(doctor);
+        }
         if (authProviderType == AuthProviderType.EMAIL) {
             user.setPassword(passwordEncoder.encode(signupRequestDto.getPassword()));
         }
