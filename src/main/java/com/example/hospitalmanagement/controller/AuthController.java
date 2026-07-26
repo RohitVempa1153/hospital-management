@@ -9,6 +9,7 @@ import com.example.hospitalmanagement.dto.SignupRequestDto;
 import com.example.hospitalmanagement.dto.SignupResponseDto;
 import com.example.hospitalmanagement.security.AuthService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -33,5 +34,11 @@ public class AuthController {
     public ResponseEntity<SignupResponseDto> signup(@Valid @RequestBody SignupRequestDto signupRequestDto) {
         return ResponseEntity.ok(authService.signup(signupRequestDto));
     }
+
+    @PostMapping("logout")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        return authService.logout(request);
+    }
+    
     
 }

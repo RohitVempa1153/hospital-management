@@ -2,6 +2,7 @@ package com.example.hospitalmanagement.security;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
@@ -11,17 +12,23 @@ import org.springframework.stereotype.Component;
 
 import com.example.hospitalmanagement.entity.User;
 import com.example.hospitalmanagement.entity.type.AuthProviderType;
+import com.example.hospitalmanagement.service.RedisService;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class AuthUtil {
     @Value("${jwt.secretKey}")
     private String jwtSecretKey;
+
+    private final RedisService redisService;
 
     private SecretKey getSecretKey()
     {
@@ -33,10 +40,30 @@ public class AuthUtil {
         return Jwts.builder()
                 .subject(user.getUsername())
                 .claim("userId", user.getId().toString())
+                .claim("jti", UUID.randomUUID().toString())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000*60*10))
                 .signWith(getSecretKey())
                 .compact();
+    }
+
+    public Boolean isTokenBlacklisted(String jti)
+    {
+        return redisService.isTokenBlacklisted(jti);
+    }
+
+    public void blacklistToken(String token)
+    {
+        Claims claims = Jwts.parser()
+        .verifyWith(getSecretKey())
+        .build()
+        .parseSignedClaims(token)
+        .getPayload();
+
+        var jti = claims.get("jti", String.class);
+        if (jti != null) {
+            redisService.storeBlacklistToken(jti, claims.getExpiration());
+        }
     }
 
     public String getUsernameFromToken(String token) {
@@ -45,6 +72,13 @@ public class AuthUtil {
         .build()
         .parseSignedClaims(token)
         .getPayload();
+
+        // Check if token is blacklisted
+        String jti = claims.get("jti", String.class);
+        log.info(isTokenBlacklisted(jti).toString());
+        if (isTokenBlacklisted(jti)) {
+            throw new JwtException("Token has been blacklisted");
+        }
 
         return claims.getSubject();
     }
