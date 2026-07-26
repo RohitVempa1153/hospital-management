@@ -2,6 +2,7 @@ package com.example.hospitalmanagement.security;
 
 import java.util.Set;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -24,6 +25,7 @@ import com.example.hospitalmanagement.respository.DoctorRepository;
 import com.example.hospitalmanagement.respository.PatientRepository;
 import com.example.hospitalmanagement.respository.UserRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -133,5 +135,16 @@ public class AuthService {
 
         LoginResponseDto loginResponseDto = new LoginResponseDto(authUtil.generateAccessToken(user), user.getId());
         return ResponseEntity.ok(loginResponseDto); 
+    }
+
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        var header = request.getHeader("Authorization");
+        if (header == null || !header.startsWith("Bearer")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        var token = header.substring(7);
+        authUtil.blacklistToken(token);
+
+        return ResponseEntity.ok().body("User logged out");
     }
 }
