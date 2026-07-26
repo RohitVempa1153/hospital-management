@@ -3,6 +3,8 @@ package com.example.hospitalmanagement.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +29,7 @@ public class AppointmentService {
     private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
 
+    @CacheEvict(value = "doctorAppointments", key = "#createAppointmentRequestDto.doctorId")
     @Transactional
     public AppointmentResponseDto createNewAppointment(CreateAppointmentRequestDto createAppointmentRequestDto)
     {
@@ -64,6 +67,7 @@ public class AppointmentService {
         return appointment;
     }
 
+    @Cacheable(value = "doctorAppointments", key = "#doctor_id")
     @PreAuthorize("hasRole('ADMIN') OR (hasRole('DOCTOR') AND #doctor_id == authentication.principal.id)")
     public List<AppointmentResponseDto> getAllAppointmentsOfDoctor(Long doctor_id)
     {
